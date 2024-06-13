@@ -71,13 +71,20 @@ async def findTopUsers(
     try :
         topLimitUsers = myDataBase.query(User).order_by(User.victorieCount.desc()).limit(limit)
         topUsers = myDataBase.execute(topLimitUsers).fetchall()
-        return [{"userName" : user[0].userName , "point" : user[0].victorieCount} for user in topUsers]
+        return [{"userName" : user[0].userName ,"id" : user[0].id , "point" : user[0].victorieCount} for user in topUsers]
     except Exception as exception:
         raise HTTPException(status_code = 500, detail = str(exception))
     finally :
             myDataBase.close()
 
-@app.get("users/{userName}" , tags = ['users'])
+# ---------- after this comment ; all functins and f
+
+@app.get(
+            "/users/{userName}" ,
+            tags = ['users'] , 
+            summary = 'find user points by their Id' ,
+            description = 'please inter your id to see details'
+        )
 async def findUserPoints(id : int):
         myDataBase = SessionLocal()
         try :
@@ -91,7 +98,7 @@ async def findUserPoints(id : int):
                 }
             }
         except Exception as exception:
-                raise HTTPException(status_code = 500, detail = str(exception))
+                raise HTTPException(status_code = 404 , detail = str(exception))
         finally :
             myDataBase.close()
         
